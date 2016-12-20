@@ -7,6 +7,7 @@
 var app = require('../app');
 var debug = require('debug')('remote-control-server:server');
 var http = require('http');
+var IOManager = require('../libs/IOManager');
 
 /**
  * Get port from environment and store in Express.
@@ -20,6 +21,12 @@ app.set('port', port);
  */
 
 var server = http.createServer(app);
+
+/**
+* Initialize socket.io
+*/
+
+IOManager(server);
 
 /**
  * Listen on provided port, on all network interfaces.

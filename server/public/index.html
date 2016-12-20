@@ -5,13 +5,64 @@
     <meta charset="utf-8">
     <meta http-equiv="Content-type" content="text/html; charset=utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <style type="text/css"></style>
+    <style type="text/css">
+      body {
+        padding: 0;
+        margin: 0;
+      }
+
+      #control-surface {
+        background-color: #123123;
+        width: 100vw;
+        height: 100vh;
+      }
+    </style>
 </head>
 
 <body>
   <div>
-      <div id="control-surface"></div>
+      <div touch-action="none" id="control-surface"></div>
   </div>
-  <script src="https://code.jquery.com/pep/0.4.1/pep.js"></script>
+  <script src="/vendors/jqueryPEP/pep.min.js"></script>
+  <script src="/vendors/socket.io/socket.io-1.4.5.js"></script>
+  <script>
+    var surface = document.getElementById('control-surface');
+    var socket = io();
+
+    var previous = {
+      pageX: 0,
+      pageY: 0
+    };
+    var diff = {
+      pageX: 0,
+      pageY: 0
+    };
+
+    var isTouching = false;
+
+    surface.addEventListener('pointerdown', function(event) {
+      previous.pageX = event.pageX;
+      previous.pageY = event.pageY;
+      isTouching = true;
+    });
+
+    surface.addEventListener('pointermove', function(event) {
+      if (isTouching) {
+        event.preventDefault();
+        diff.pageX = event.pageX - previous.pageX;
+        diff.pageY = event.pageY - previous.pageY;
+        previous.pageX = event.pageX;
+        previous.pageY = event.pageY;
+
+        console.log(diff.pageX, diff.pageY);
+        socket.emit('key', 'mouse', diff);
+      }
+    });
+
+    surface.addEventListener('pointerup', function(event) {
+      isTouching = false;
+    });
+
+  </script>
 </body>
 </html>
