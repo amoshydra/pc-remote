@@ -39,6 +39,8 @@
     };
 
     var isTouching = false;
+    var isMoving = false;
+
 
     surface.addEventListener('pointerdown', function(event) {
       previous.pageX = event.pageX;
@@ -47,6 +49,7 @@
     });
 
     surface.addEventListener('pointermove', function(event) {
+      isMoving = true;
       if (isTouching) {
         event.preventDefault();
         diff.pageX = event.pageX - previous.pageX;
@@ -54,13 +57,17 @@
         previous.pageX = event.pageX;
         previous.pageY = event.pageY;
 
-        console.log(diff.pageX, diff.pageY);
-        socket.emit('key', 'mouse', diff);
+        socket.emit('key', 'mousemove', diff);
       }
     });
 
     surface.addEventListener('pointerup', function(event) {
+      if (!isMoving) {
+        socket.emit('key', 'mousedown', { pageX: event.pageX, pageY: event.pageY });
+      }
+      isDblClick = false;
       isTouching = false;
+      isMoving = false;
     });
 
   </script>
