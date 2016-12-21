@@ -6,13 +6,16 @@
   "author": "amoshydra",
   "private": true,
   "postinstall": "install-app-deps",
+  "main": "./application/main.js",
   "scripts": {
     "start": "electron ./application/main.js",
     "setup": "npm install && npm run rebuild",
-    "rebuild": "npm rebuild --runtime=electron --target=1.4.13 --disturl=https://atom.io/download/atom-shell --abi=48"
+    "rebuild": "npm rebuild --runtime=electron --target=1.4.13 --disturl=https://atom.io/download/atom-shell --abi=48",
+    "pack": "build --dir",
+    "dist": "build"
   },
   "build": {
-    "appId": "com.amoshydra.electron.youtubetv"
+    "appId": "com.amoshydra.electron.remote-control-server"
   },
   "dependencies": {
     "debug": "~2.2.0",
