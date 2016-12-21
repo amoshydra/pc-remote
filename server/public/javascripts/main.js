@@ -5,116 +5,160 @@ var surface = document.getElementById('control-surface');
 var scroll = document.getElementById('scroll-surface');
 var btnToggleMode = document.getElementById('action-toggle');
 
-var controlMode = 'mouse';
+var constants = {
+  controlModes: {
+    mouse: 'mouse',
+    navigation: 'navigation'
+  },
+  scrollMultInterval: 10
+};
+var config = {
+  control: {
+    mode: constants.controlModes.mouse,
+    matches: function (mode) {
+      return (mode === this.mode);
+    },
+    set: function(mode) {
+      this.mode = mode;
+    },
+    get: function() {
+      return this.mode;
+    }
+  },
+  scrollDelay: 4,
+  moveSpeed: 2,
+  touchThreshold: 10
+}
 
 btnToggleMode.addEventListener('click', function() {
-  var currentMode = btnToggleMode.innerText;
-
-  if (currentMode.toLowerCase() === 'mouse') {
-    controlMode = 'navigation';
+  if (config.control.matches(constants.controlModes.mouse)) {
+    config.control.set(constants.controlModes.navigation);
   } else {
-    controlMode = 'mouse';
+    config.control.set(constants.controlModes.mouse);
   }
-  btnToggleMode.innerText = controlMode;
+  btnToggleMode.innerText = config.control.get();
 });
 
 (function(){
-  var previous = {
-    pageX: 0,
-    pageY: 0
+  var ptStat = {
+    init: { x: 0, y: 0 },
+    prev: { x: 0, y: 0 },
+    diff: { x: 0, y: 0 },
+    bool: {
+      isActive: false,
+      isMoving: false
+    },
+    updatePrev: function(event) {
+      this.prev.x = event.pageX;
+      this.prev.y = event.pageY;
+    },
+    updateInit: function(event) {
+      this.init.x = event.pageX;
+      this.init.y = event.pageY;
+    },
+    updateDiff: function(event, mult) {
+      mult = mult || 1;
+
+      this.diff.x = (event.pageX - this.prev.x) * mult;
+      this.diff.y = (event.pageY - this.prev.y) * mult;
+    },
+    reset: function() {
+      this.bool.isActive = false;
+      this.bool.isMoving = false;
+    }
   };
-  var diff = {
-    pageX: 0,
-    pageY: 0
-  };
 
-  var isTouching = false;
-  var isMoving = false;
-  var firstTouch = {};
+  var pointerdown = function pointerdown(event) {
+    ptStat.updatePrev(event);
+    ptStat.updateInit(event);
 
-  surface.addEventListener('pointerdown', function(event) {
-    previous.pageX = event.pageX;
-    previous.pageY = event.pageY;
+    ptStat.bool.isActive = true;
+  }
 
-    firstTouch.pageX = event.pageX;
-    firstTouch.pageY = event.pageY;
+  var pointermove = function pointermove(event) {
+    ptStat.bool.isMoving = true;
 
-    isTouching = true;
-  });
-
-  surface.addEventListener('pointermove', function(event) {
-    isMoving = true;
-    if (isTouching && (controlMode === 'mouse')) {
+    if (ptStat.bool.isActive && config.control.matches(constants.controlModes.mouse)) {
       event.preventDefault();
-      diff.pageX = event.pageX - previous.pageX;
-      diff.pageY = event.pageY - previous.pageY;
-      previous.pageX = event.pageX;
-      previous.pageY = event.pageY;
 
-      socket.emit('key', 'mousemove', diff);
+      ptStat.updateDiff(event, config.moveSpeed);
+      ptStat.updatePrev(event);
+
+      socket.emit('key', 'mousemove', ptStat.diff);
     }
-  });
+  }
 
-  surface.addEventListener('pointerup', function(event) {
+  var pointerup = function pointerup(event) {
 
-    let travel = {
-      pageX: event.pageX - firstTouch.pageX,
-      pageY: event.pageY - firstTouch.pageY
-    };
-    let magnitude = Math.sqrt((travel.pageX * travel.pageX) + (travel.pageY * travel.pageY));
-    if (magnitude < 50) {
-      if (controlMode === 'mouse') {
-        socket.emit('key', 'mousedown', { pageX: event.pageX, pageY: event.pageY });
-      } else {
-        socket.emit('key', 'navigateenter', { pageX: event.pageX, pageY: event.pageY });
+
+    if (config.control.matches(constants.controlModes.mouse)) {
+      if (!ptStat.bool.isMoving) {
+        socket.emit('key', 'mousedown', { x: event.pageX, y: event.pageY });
       }
+    } else if (config.control.matches(constants.controlModes.navigation)) {
 
-    } else {
-      if (controlMode === 'navigation')
+      let travel = {
+        x: event.pageX - ptStat.init.x,
+        y: event.pageY - ptStat.init.y
+      };
+      let pseudoMagnitude = (travel.x + travel.y) / 2;
+
+      if (Math.abs(pseudoMagnitude) < config.touchThreshold) {
+        socket.emit('key', 'navigateenter', { x: event.pageX, y: event.pageY });
+      } else {
         socket.emit('key', 'navigatemove', travel);
+      }
     }
 
-    isTouching = false;
-    isMoving = false;
-  });
+    ptStat.reset();
+  }
+
+  surface.addEventListener('pointerdown', pointerdown);
+  surface.addEventListener('pointermove', pointermove);
+  surface.addEventListener('pointerup', pointerup)
 
 }());
 
 (function(){
-  var previous = {
-    pageX: 0,
-    pageY: 0
+  var ptStat = {
+    prev: { x: 0, y: 0 },
+    diff: { x: 0, y: 0 },
+    bool: {
+      isActive: false,
+      isMoving: false
+    },
+    updatePrev: function(event) {
+      this.prev.x = event.pageX;
+      this.prev.y = event.pageY;
+    },
+    updateDiff: function(event) {
+      this.diff.x = event.pageX - this.prev.x;
+      this.diff.y = event.pageY - this.prev.y;
+    }
   };
-  var diff = {
-    pageX: 0,
-    pageY: 0
-  };
 
-  var isTouching = false;
+  var pointerdown = function pointerdown(event) {
+    ptStat.updatePrev(event);
+    ptStat.bool.isTouching = true;
+  }
 
-  scroll.addEventListener('pointerdown', function(event) {
-    previous.pageX = event.pageX;
-    previous.pageY = event.pageY;
+  var pointerup = function pointerup(event) {
+    ptStat.bool.isTouching = false;
+  }
 
-    isTouching = true;
-  });
-
-  scroll.addEventListener('pointermove', _.throttle(scrollPage, 10 * 4));
-
-  scroll.addEventListener('pointerup', function(event) {
-    isTouching = false;
-  });
-
-  function scrollPage(event) {
-    if (isTouching) {
+  var pointermove = function pointermove(event) {
+    if (ptStat.bool.isTouching) {
       event.preventDefault();
-      diff.pageX = event.pageX - previous.pageX;
-      diff.pageY = event.pageY - previous.pageY;
-      previous.pageX = event.pageX;
-      previous.pageY = event.pageY;
+      ptStat.updateDiff(event);
+      ptStat.updatePrev(event);
 
-      socket.emit('key', 'scroll', diff);
+      socket.emit('key', 'scroll', ptStat.diff);
     }
   }
+
+  var scrollSpeed = config.scrollDelay * constants.scrollMultInterval;
+  scroll.addEventListener('pointerdown', pointerdown);
+  scroll.addEventListener('pointermove', _.throttle(pointermove, scrollSpeed));
+  scroll.addEventListener('pointerup', pointerup);
 
 }());

@@ -3,7 +3,7 @@ const robot = require('robotjs');
 var handlerFuncs = {
   mousemove: function(pos) {
     mouse = robot.getMousePos();
-    robot.moveMouse(mouse.x + pos.pageX, mouse.y + pos.pageY);
+    robot.moveMouse(mouse.x + pos.x, mouse.y + pos.y);
   },
 
   mousedown: function() {
@@ -15,7 +15,7 @@ var handlerFuncs = {
   },
 
   navigatemove: function(pos) {
-    let angle = Math.atan2(pos.pageY, pos.pageX);
+    let angle = Math.atan2(pos.y, pos.x);
     angle = angle * 180 / Math.PI + 45;
     let quadrant = Math.floor(angle/90) % 4 + 1;
 
@@ -33,8 +33,8 @@ var handlerFuncs = {
   },
 
   scroll: function(pos) {
-    if (pos.pageY < 0) direction = 'up';
-    if (pos.pageY > 0) direction = 'down';
+    if (pos.y < 0) direction = 'up';
+    if (pos.y > 0) direction = 'down';
 
     robot.scrollMouse(1, direction);
   }
