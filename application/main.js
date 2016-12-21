@@ -1,7 +1,7 @@
 'use strict';
 
 const electron = require('electron');
-const express = require('../server/bin/www');
+const express = require('../server/bin/server');
 const tray = require('./controllers/tray');
 const networksUtil = require('./utils/networks');
 const { app, BrowserWindow, webContents } = electron;
