@@ -1,8 +1,36 @@
 body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  padding: 0;
+  margin: 0;
 }
 
-a {
-  color: #00B7FF;
+.menu {
+  padding: 8px;
+  height: calc(50px - (8px * 2));
+  background-color: #a2da2a;
+  text-align: right;
+}
+
+.surface {
+  float: left;
+  height: calc(100vh - 50px);
+}
+
+#control-surface {
+  background-color: #123123;
+  width: calc(100% - 60px);
+}
+
+#scroll-surface {
+  background-color: #984193;
+  width: 60px;
+}
+
+button {
+  border: none;
+  font-size: 0.9em;
+  background-color: white;
+  padding: 8px 10px;
+  box-shadow: 1px 1px 1px 1px rgba(0,0,0,0.1);
+  font-weight: 600;
+  text-transform: uppercase;
 }
