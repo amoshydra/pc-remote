@@ -8,6 +8,7 @@
   "postinstall": "install-app-deps",
   "scripts": {
     "start": "electron ./application/main.js",
+    "setup": "npm install && npm run rebuild",
     "rebuild": "npm rebuild --runtime=electron --target=1.4.13 --disturl=https://atom.io/download/atom-shell --abi=48"
   },
   "build": {
