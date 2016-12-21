@@ -1,6 +1,6 @@
 const electron = require('electron');
 const platform = require('os').platform();
-var pjson = require('../../package.json');
+const pjson = require('../../package.json');
 
 const { app, Tray, Menu } = electron;
 
@@ -9,26 +9,40 @@ const ICON_PATH = `${__dirname}/../`;
 const ICON_WINDOWS = 'favicon.ico';
 const ICON_OSX = 'favicon.png';
 let tray;
+let network;
 
 const SysTray = function SysTray() {};
 
-SysTray.prototype.init = function init() {
+SysTray.prototype.init = function init(_network) {
   tray = null;
+  network = _network;
   setupTray();
 };
 
 function setupTray() {
   tray = new Tray(getIconFilepathForPlatform());
   tray.setToolTip(APP_TITLE);
-  const contextMenu = Menu.buildFromTemplate([
-    {
-      label: `${APP_TITLE} is running`,
+
+  // Set up menu template
+  let menuTemplate = [{
+    label: `${APP_TITLE} is listening on`,
+    enabled: false
+  }];
+
+  network.addresses.forEach((address, index) => {
+    menuTemplate.push({
+      label: `  ${address}:${network.port}`,
       enabled: false
-    }, {
-      label: 'Exit',
-      click() { app.quit(); }
-    }
-  ]);
+    });
+  });
+
+  menuTemplate.push({
+    label: 'Exit',
+    click() { app.quit(); }
+  });
+
+  // Build menu template
+  const contextMenu = Menu.buildFromTemplate(menuTemplate);
   tray.setContextMenu(contextMenu);
 }
 
