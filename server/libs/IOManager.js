@@ -46,6 +46,13 @@ const IOManager = function IOManager(server) {
         robot.keyTap("enter");
       }
 
+      if (event === 'scroll') {
+        if (pos.pageY < 0) direction = 'up';
+        if (pos.pageY > 0) direction = 'down';
+
+        robot.scrollMouse(1, direction);
+      }
+
     });
   });
 
