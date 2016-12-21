@@ -1,9 +1,18 @@
 {
   "name": "remote-control-server",
-  "version": "0.0.0",
+  "productName": "PC Remote Server",
+  "description": "HTTP remote control server with socket.io",
+  "version": "0.0.1",
+  "author": "amoshydra",
   "private": true,
+  "postinstall": "install-app-deps",
   "scripts": {
-    "start": "node ./server/bin/www"
+    "start": "electron ./application/main.js",
+    "startServer": "node ./server/bin/www",
+    "rebuild": "npm rebuild --runtime=electron --target=1.4.13 --disturl=https://atom.io/download/atom-shell --abi=48"
+  },
+  "build": {
+    "appId": "com.amoshydra.electron.youtubetv"
   },
   "dependencies": {
     "body-parser": "~1.15.1",
@@ -17,5 +26,10 @@
     "serve-favicon": "~2.3.0",
     "socket.io": "^1.7.2",
     "uws": "^0.12.0"
+  },
+  "devDependencies": {
+    "7zip-bin-win": "^2.0.2",
+    "electron": "1.4.13",
+    "electron-builder": "^10.9.2"
   }
 }
