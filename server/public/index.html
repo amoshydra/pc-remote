@@ -11,26 +11,49 @@
         margin: 0;
       }
 
-      #control-surface {
+      .menu {
+        padding: 8px;
+        height: calc(50px - (8px * 2));
+        background-color: #a2da2a;
+        text-align: right;
+      }
+
+      .surface {
         float: left;
+        height: calc(100vh - 50px);
+      }
+
+      #control-surface {
         background-color: #123123;
-        width: calc(100% - 70px);
-        height: 100vh;
+        width: calc(100% - 60px);
       }
 
       #scroll-surface {
-        float: left;
         background-color: #984193;
-        width: 70px;
-        height: 100vh;
+        width: 60px;
+      }
+
+      button {
+        border: none;
+        font-size: 0.9em;
+        background-color: white;
+        padding: 8px 10px;
+        box-shadow: 1px 1px 1px 1px rgba(0,0,0,0.1);
+        font-weight: 600;
+        text-transform: uppercase;
       }
     </style>
 </head>
 
 <body>
   <div>
-    <div touch-action="none" id="scroll-surface"></div>
-    <div touch-action="none" id="control-surface"></div>
+    <div id="menu" class="menu">
+      <button id="action-toggle">Mouse</button>
+    </div>
+    <div id="surface">
+      <div touch-action="none" id="scroll-surface" class="surface"></div>
+      <div touch-action="none" id="control-surface" class="surface"></div>
+    </div>
   </div>
   <script src="/vendors/jqueryPEP/pep.min.js"></script>
   <script src="/vendors/lodash/lodash.min.js"></script>
@@ -41,6 +64,20 @@
     var socket = io();
     var surface = document.getElementById('control-surface');
     var scroll = document.getElementById('scroll-surface');
+    var btnToggleMode = document.getElementById('action-toggle');
+
+    var controlMode = 'mouse';
+
+    btnToggleMode.addEventListener('click', function() {
+      var currentMode = btnToggleMode.innerText;
+
+      if (currentMode.toLowerCase() === 'mouse') {
+        controlMode = 'navigation';
+      } else {
+        controlMode = 'mouse';
+      }
+      btnToggleMode.innerText = controlMode;
+    });
 
     (function(){
       var previous = {
@@ -68,7 +105,7 @@
 
       surface.addEventListener('pointermove', function(event) {
         isMoving = true;
-        if (isTouching) {
+        if (isTouching && (controlMode === 'mouse')) {
           event.preventDefault();
           diff.pageX = event.pageX - previous.pageX;
           diff.pageY = event.pageY - previous.pageY;
@@ -87,9 +124,15 @@
         };
         let magnitude = Math.sqrt((travel.pageX * travel.pageX) + (travel.pageY * travel.pageY));
         if (magnitude < 50) {
-          socket.emit('key', 'mousedown', { pageX: event.pageX, pageY: event.pageY });
+          if (controlMode === 'mouse') {
+            socket.emit('key', 'mousedown', { pageX: event.pageX, pageY: event.pageY });
+          } else {
+            socket.emit('key', 'navigateenter', { pageX: event.pageX, pageY: event.pageY });
+          }
+
         } else {
-          socket.emit('key', 'navigatemove', travel);
+          if (controlMode === 'navigation')
+            socket.emit('key', 'navigatemove', travel);
         }
 
         isTouching = false;
