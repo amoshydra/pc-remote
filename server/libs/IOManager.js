@@ -9,10 +9,10 @@ const IOManager = function IOManager(server) {
   //   perMessageDeflate: false
   // });
 
-  console.log('Socket.io is initialized');
-
   io.on('connection', function(socket) {
-    console.log('client connected');
+    let address = socket.handshake.address;
+    console.log('New connection from ' + address.address + ':' + address.port);
+    socket.emit('welcome');
 
     socket.on('key', function(event, pos) {
       if (event === 'mousemove') {
