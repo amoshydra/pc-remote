@@ -26,6 +26,8 @@
   <script src="/vendors/jqueryPEP/pep.min.js"></script>
   <script src="/vendors/socket.io/socket.io-1.4.5.js"></script>
   <script>
+    'use strict';
+
     var surface = document.getElementById('control-surface');
     var socket = io();
 
@@ -40,11 +42,16 @@
 
     var isTouching = false;
     var isMoving = false;
+    var firstTouch = {};
 
 
     surface.addEventListener('pointerdown', function(event) {
       previous.pageX = event.pageX;
       previous.pageY = event.pageY;
+
+      firstTouch.pageX = event.pageX;
+      firstTouch.pageY = event.pageY;
+
       isTouching = true;
     });
 
@@ -62,10 +69,18 @@
     });
 
     surface.addEventListener('pointerup', function(event) {
-      if (!isMoving) {
+
+      let travel = {
+        pageX: event.pageX - firstTouch.pageX,
+        pageY: event.pageY - firstTouch.pageY
+      };
+      let magnitude = Math.sqrt((travel.pageX * travel.pageX) + (travel.pageY * travel.pageY));
+      if (magnitude < 50) {
         socket.emit('key', 'mousedown', { pageX: event.pageX, pageY: event.pageY });
+      } else {
+        socket.emit('key', 'navigatemove', travel);
       }
-      isDblClick = false;
+
       isTouching = false;
       isMoving = false;
     });
