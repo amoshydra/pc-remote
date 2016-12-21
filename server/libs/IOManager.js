@@ -10,8 +10,10 @@ const IOManager = function IOManager(server) {
   // });
 
   io.on('connection', function(socket) {
-    let address = socket.handshake.address;
-    console.log('New connection from ' + address.address + ':' + address.port);
+
+    var clientIp = socket.request.connection.remoteAddress;
+    var clienPort = socket.request.connection.remotePort;
+    console.log(`\nNew connection from [${clientIp}:${clienPort}] - ${socket.id}`);
     socket.emit('welcome');
 
     socket.on('key', function(event, pos) {
