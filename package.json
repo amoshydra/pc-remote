@@ -9,6 +9,7 @@
   "main": "./application/main.js",
   "scripts": {
     "start": "electron ./application/main.js",
+    "watch": "nodemon --exec electron application/main.js",
     "setup": "npm install && npm run rebuild",
     "rebuild": "npm rebuild --runtime=electron --target=1.4.13 --disturl=https://atom.io/download/atom-shell --abi=48",
     "pack": "build --dir",
@@ -30,6 +31,7 @@
   "devDependencies": {
     "7zip-bin-win": "^2.0.2",
     "electron": "1.4.13",
-    "electron-builder": "^10.9.2"
+    "electron-builder": "^10.9.2",
+    "nodemon": "^1.11.0"
   }
 }
