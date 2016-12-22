@@ -81,8 +81,8 @@ body {
 }
 
 .col { display: inline-block; }
-.col.perc-8 { width: 80%; }
-.col.perc-2 { width: 20%; }
+.col.left { width: 100px; }
+.col.right { width: calc(100% - 100px); }
 
 .input {
   font-size: 1em;
@@ -100,11 +100,22 @@ button {
   text-transform: uppercase;
 }
 
+@import url('/vendors/fonts/roboto/roboto.css');
+
 button.input {
-  height: 50px;
-  width: 100%;
-  background-color: rgba(0,0,0,0);
+  font-family: 'Roboto', sans-serif;
+  border: none;
+  border-radius: 2px;
+  font-weight: 500;
+  box-shadow: 1px 1px 1px 1px rgba(0,0,0,0.2);
+
+  font-size: 0.8em;
+  width: calc(100% - 20px);
+  height: calc(50px - 16px);
+  margin: 8px 10px;
+
   color: rgba(255,255,255,0.9);
+  background-color: rgba(255,255,255,0.06);
 }
 
 input.input {
@@ -112,6 +123,26 @@ input.input {
   height: 50px;
   width: 100%;
   font-size: 1.2em;
-  background-color: rgba(0,0,0,0.2);
+
   color: rgba(255,255,255,0.9);
+  background-color: rgba(255,255,255,0.06);
+  box-shadow: 0.5px 0.5px 1px 1px rgba(0,0,0,0.1);
+
+  width: calc(100% - 24px);
+  height: calc(50px - 16px);
+  margin: 8px 12px;
+}
+
+.input {
+  transition: transform 0.5s, background 0.2s;
+
+}
+
+.input:active {
+  transform: translateY(5px);
+  background-color: rgba(255,255,255,0.01);
+}
+
+.input:focus, .input:active {
+  outline: none;
 }

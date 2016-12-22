@@ -8,7 +8,7 @@ var btnToggleMode = document.getElementById('action-toggle');
 var constants = {
   controlModes: {
     mouse: 'mouse',
-    navigation: 'navigation'
+    navigation: 'navigate'
   },
   scrollMultInterval: 10
 };
