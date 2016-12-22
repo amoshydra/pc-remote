@@ -4,6 +4,7 @@ var socket = io();
 var surface = document.getElementById('control-surface');
 var scroll = document.getElementById('scroll-surface');
 var btnToggleMode = document.getElementById('action-toggle');
+var inputField = document.getElementById('action-text');
 
 var constants = {
   controlModes: {
@@ -38,6 +39,54 @@ btnToggleMode.addEventListener('click', function() {
   }
   btnToggleMode.innerText = config.control.get();
 });
+
+
+/* Possible scenario
+*   1. Chrome mobile
+        - Receive single character { key: "Unidentified"; keyCode: 229 }
+        - Receive word from auto-suggest / complete (same as above)
+        - Receive non-display character (has unique key and keyCode)
+    2. Microsoft Windows 10 Chrome
+        - Receive single character (has unique key and keycode).
+            - however keyCode does not differentiate upper / lowercase
+        - Receive chinese character { key: "Process"; keyCode: 261 }
+
+*/
+inputField.addEventListener('keyup', keyup);
+inputField.addEventListener('input', input);
+
+function input(event) {
+  var data = {
+    key: inputField.value,
+  };
+  inputField.value = '';
+
+  // return displayable character
+  console.log(data);
+  socket.emit('key', 'keydown', data);
+}
+
+function keyup(event) {
+  // Store current event data
+  var data = {
+    key: event.key,
+    keyCode: event.keyCode
+  };
+
+  if ((data.keyCode === 229)        ||  // [1] Android Chrome text input (229 buffer busy).
+      (data.key === 'Unidentified') ||  //     This will most likely return 'Unidentified' too
+      (data.keyCode === 261)        ||  // [2] Windows 10 Chrome chinese character selector character
+      (data.key.length === 1))          // [3] Match non-displayable character on most device.
+  {
+    // We let `input` event handle this.
+    return;
+  }
+
+
+  // This should return non-displayable character only
+  console.log(data);
+  socket.emit('key', 'keydown', data);
+}
 
 (function(){
   var ptStat = {

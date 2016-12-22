@@ -37,8 +37,44 @@ var handlerFuncs = {
     if (pos.y > 0) direction = 'down';
 
     robot.scrollMouse(1, direction);
+  },
+
+  keydown: function(data) {
+    if (data.keyCode) {
+      // normalise key's name
+      data.key = data.key.toLowerCase();
+      data.key = mapToRobotJs(data.key);
+
+      if (data.key) {
+        robot.keyTap(data.key);
+      }
+
+    } else {
+      robot.typeString(data.key);
+    }
   }
 };
+
+// Map JavaScript Key event name to robotjs event
+// return null if the name is a invalid robotjs event
+function mapToRobotJs(eventName) {
+  switch (eventName) {
+    case 'ArrowLeft':
+    case 'ArrowUp':
+    case 'ArrowRight':
+    case 'ArrowDown':
+      return eventName.subString(4);
+    case 'AudioVolumeMute':
+      return 'audio_' + eventName.subString(11);
+    case 'AudioVolumeUp':
+    case 'AudioVolumeDown':
+      return 'audio_vol_' + eventName.subString(11);
+    case 'Meta':
+      return null;
+    default:
+      return eventName;
+  }
+}
 
 var handler = function(event, pos) {
   handlerFuncs[event](pos);
