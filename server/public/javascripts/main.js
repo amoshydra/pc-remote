@@ -89,19 +89,17 @@ btnToggleMode.addEventListener('click', function() {
   }
 
   var pointerup = function pointerup(event) {
-
-
     if (config.control.matches(constants.controlModes.mouse)) {
       if (!ptStat.bool.isMoving) {
         socket.emit('key', 'mousedown', { x: event.pageX, y: event.pageY });
       }
     } else if (config.control.matches(constants.controlModes.navigation)) {
 
-      let travel = {
+      var travel = {
         x: event.pageX - ptStat.init.x,
         y: event.pageY - ptStat.init.y
       };
-      let pseudoMagnitude = (travel.x + travel.y) / 2;
+      var pseudoMagnitude = (travel.x + travel.y) / 2;
 
       if (Math.abs(pseudoMagnitude) < config.touchThreshold) {
         socket.emit('key', 'navigateenter', { x: event.pageX, y: event.pageY });
