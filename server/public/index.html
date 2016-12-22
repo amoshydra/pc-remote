@@ -20,19 +20,23 @@
 
 <body>
   <div>
-    <div id="menu" style="background: #333f50" class="menu">
-      <button id="action-toggle">Mouse</button>
-    </div>
-    <div id="surface">
+    <div id="surface" class="row">
       <div touch-action="none" id="scroll-surface" class="surface">
         <div class="shape-container scroll-arrow">
           <span class="shape arrow up"></span>
           <span class="shape line vertical"></span>
           <span class="shape arrow down"></span>
         </div>
-
       </div>
       <div touch-action="none" id="control-surface" class="surface"></div>
+    </div>
+    <div id="menu" style="background: #333f50" class="menu row">
+      <div class="col perc-2">
+        <button id="action-toggle" class="input">Mouse</button>
+      </div>
+      <div class="col perc-8">
+        <input id="action-text" class="input" type="text"/>
+      </div>
     </div>
   </div>
   <script src="/vendors/jqueryPEP/pep.min.js"></script>
