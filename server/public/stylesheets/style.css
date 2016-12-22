@@ -82,7 +82,7 @@ body {
 
 .col { display: inline-block; }
 .col.left { width: 100px; }
-.col.right { width: calc(100% - 100px); }
+.col.right { width: calc(100% - 110px); }
 
 .input {
   font-size: 1em;
