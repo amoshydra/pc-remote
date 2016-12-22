@@ -1,4 +1,6 @@
 const robot = require('robotjs');
+const ncp = require('copy-paste');
+const _ = require('lodash');
 
 var handlerFuncs = {
   mousemove: function(pos) {
@@ -50,10 +52,49 @@ var handlerFuncs = {
       }
 
     } else {
-      robot.typeString(data.key);
+      if (data.key.charCodeAt(0) > 255) { // none ASCII character
+        var result;
+
+        if (data.key.charCodeAt(0) > 60000) {
+          var charCode = data.key.charCodeAt(0);
+          result = '|' + String.fromCharCode(charCode);
+          sendUnicode(result, true);
+        } else {
+          var output = [' '];
+          for (var i = 0; i < data.key.length; i++) {
+            var charCode = data.key.charCodeAt(i);
+            output.push(String.fromCharCode(charCode));
+          }
+
+          result = output.join('');
+          sendUnicode(result);
+        }
+
+      } else {
+        robot.typeString(data.key);
+      }
     }
   }
 };
+
+// Send unicode using copy and paste method
+var stringBuffer = '';
+function sendUnicode(word, isSpecial) {
+  stringBuffer += word;
+
+  _.debounce(function() {
+    let temp = stringBuffer;
+    stringBuffer = '';
+    ncp.copy(temp, function() {
+      robot.keyTap('v', 'control');
+      if (isSpecial) {
+        robot.keyTap('left');
+        robot.keyTap('backspace');
+        robot.keyTap('right');
+      }
+    });
+  }, 800)();
+}
 
 // Map JavaScript Key event name to robotjs event
 // return null if the name is a invalid robotjs event
