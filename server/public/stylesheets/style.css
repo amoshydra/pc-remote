@@ -6,31 +6,78 @@ body {
 .menu {
   padding: 8px;
   height: calc(50px - (8px * 2));
-  background-color: #a2da2a;
   text-align: right;
 }
 
 .surface {
-  float: left;
+  background-color: #333333;
   height: calc(100vh - 50px);
+  position: relative;
+  float: left;
+  touch-action: none;
 }
 
 #control-surface {
-  background-color: #123123;
   width: calc(100% - 60px);
 }
 
 #scroll-surface {
-  background-color: #984193;
   width: 60px;
 }
 
 button {
   border: none;
-  font-size: 0.9em;
+  font-size: 0.85em;
   background-color: white;
-  padding: 8px 10px;
+  padding: 10px 12px;
   box-shadow: 1px 1px 1px 1px rgba(0,0,0,0.1);
   font-weight: 600;
   text-transform: uppercase;
+}
+
+
+/* Shape CSS */
+
+.shape {
+  display: block;
+}
+
+.shape.arrow {
+  height: 6px;
+  width: 6px;
+  border-top: 1px solid white;
+  border-left: 1px solid white;
+}
+
+.shape.arrow.up {
+  transform : rotate(45deg);
+  -moz-transform : rotate(45deg);
+  -webkit-transform : rotate(45deg);
+  -o-transform : rotate(45deg);
+  -ms-transform : rotate(45deg);
+}
+
+.shape.line {
+  margin-top: -8px;
+  margin-left:3px;
+  width: 1px;
+  height: calc(100vh - 50px - 50px);
+  border-left: 1px solid white;
+}
+
+.shape.arrow.down {
+  margin-top: -8px;
+  transform : rotate(-135deg);
+  -moz-transform : rotate(-135deg);
+  -webkit-transform : rotate(-135deg);
+  -o-transform : rotate(-135deg);
+  -ms-transform : rotate(-135deg);
+}
+
+/* Arrow scroll */
+.scroll-arrow {
+  opacity: 0.2;
+  position: absolute;
+  margin-top: 24px;
+  margin-left: 10px;
 }
