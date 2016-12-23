@@ -42,10 +42,11 @@ var handlerFuncs = {
   },
 
   keydown: function(data) {
-    if (data.keyCode) {
+    console.log(data);
+    if (data.type !== 'input') {
       // normalise key's name
-      data.key = data.key.toLowerCase();
       data.key = mapToRobotJs(data.key);
+      data.key = data.key.toLowerCase();
 
       if (data.key) {
         robot.keyTap(data.key);
@@ -100,12 +101,12 @@ function mapToRobotJs(eventName) {
     case 'ArrowUp':
     case 'ArrowRight':
     case 'ArrowDown':
-      return eventName.subString(4);
+      return eventName.substring(5);
     case 'AudioVolumeMute':
-      return 'audio_' + eventName.subString(11);
+      return 'audio_' + eventName.substring(11);
     case 'AudioVolumeUp':
     case 'AudioVolumeDown':
-      return 'audio_vol_' + eventName.subString(11);
+      return 'audio_vol_' + eventName.substring(11);
     case 'Meta':
       return null;
     default:

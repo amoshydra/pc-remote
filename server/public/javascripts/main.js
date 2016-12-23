@@ -41,52 +41,185 @@ btnToggleMode.addEventListener('click', function() {
 });
 
 
-/* Possible scenario
-*   1. Chrome mobile
-        - Receive single character { key: "Unidentified"; keyCode: 229 }
-        - Receive word from auto-suggest / complete (same as above)
-        - Receive non-display character (has unique key and keyCode)
-    2. Microsoft Windows 10 Chrome
-        - Receive single character (has unique key and keycode).
-            - however keyCode does not differentiate upper / lowercase
-        - Receive chinese character { key: "Process"; keyCode: 261 }
-
+/*
+  Key press sequence:
+    > [0 - keydown]       - Differentiate for non-displayable character
+      > [1 - keypress]    - / Not used /
+        > [2 - input]     - Input character will be used to buffer user input
+          > [3 - keyup]   - / Not used /
 */
-inputField.addEventListener('keyup', keyup);
+inputField.addEventListener('keydown', keydown);
 inputField.addEventListener('input', input);
 
-function input(event) {
-  var data = {
-    key: inputField.value,
-  };
-  inputField.value = '';
+/*
+  [0 - keydown]
+  :: input[2] will not be triggered if key is a none displayable character
+  :: keyup[3] will still be triggered
+*/
+var shouldPropagate = true;
+function keydown(e) {
 
-  // return displayable character
-  console.log(data);
-  socket.emit('key', 'keydown', data);
-}
+  // Normalise keycode
+  var keyCode = e.keyCode || e.which;
 
-function keyup(event) {
-  // Store current event data
-  var data = {
-    key: event.key,
-    keyCode: event.which || event.keyCode
-  };
-
-  if ((data.keyCode === 229)        ||  // [1] Android Chrome text input (229 buffer busy).
-      (data.key === 'Unidentified') ||  //     This will most likely return 'Unidentified' too
-      (data.keyCode === 261)        ||  // [2] Windows 10 Chrome chinese character selector character
-      (data.key.length === 1))          // [3] Match non-displayable character on most device.
+  // Reject processing displayable character at this stage
+  if ((keyCode === 229)           ||  // 1. Android Chrome / iOS text input (229 = buffer busy).
+      (e.key === 'Unidentified')  ||  //     This will most likely return 'Unidentified' too
+      (keyCode === 261))              // 2. Windows 10 Chrome chinese character selector character
   {
-    // We let `input` event handle this.
+    // We will let `input` event handle this.
     return;
   }
 
+  // Process unrejected input
+  //  Most likely none displayable character
 
-  // This should return non-displayable character only
-  console.log(data);
-  socket.emit('key', 'keydown', data);
+  // Normalise key
+  var key = e.key || getKeyFromKeyCode(e.keyCode || e.which);
+
+  // Send key
+  socket.emit('key', 'keydown', { key: key, type: e.type });
+
+  // [2][3] will not be triggered
+  // except for "Enter - 13" key
+  if (key === 'Enter') shouldPropagate = false;
 }
+
+/*
+  [2 - input]
+  :: Allow user to keep typing and use debounce to send the data string
+  :: Once the time is up, send data and clear input field
+
+  :: Note: 
+  ::  - iOS Pin Yin will trigger input event without keydown or keyup
+  ::  - clearing input field does not remove iOS keyboard buffer.
+*/
+var debounceBuffer = null;
+function input(e) {
+
+  // Previous eventListener requested to stop propagation 
+  if (!shouldPropagate) {
+    shouldPropagate = true; // restore the boolean
+    return; // stop execution
+  }
+
+  if (!debounceBuffer) {
+    // create debounce if not exist
+    debounceBuffer = _.debounce(function() {
+      var data = inputField.value;
+      inputField.value = '';
+
+      socket.emit('key', 'keydown', { key: data, type: e.type });
+      debounceBuffer = null;    
+    }, 1500);
+  }
+  
+  // execute debounce
+  debounceBuffer();
+}
+
+var keyCodeMap = {
+  8: 'Backspace',
+  13: 'Enter',
+  27: 'Esc'
+}
+
+function getKeyFromKeyCode(keyCode) {
+  return keyCodeMap[keyCode];
+}
+
+// var previousLength = 1;
+// var debounceBuffer;
+// function input(event) {
+//   var data = {
+//     key: inputField.value
+//   };
+//   var keyCode = inputField.value.charCodeAt(0);
+
+
+//   if (true) {
+//     // is a Unicode character, decide accordingly
+
+//     if (data.key.length > previousLength) {
+//       // New character is inserted to the back of the string
+
+//       // store all previous input
+//       data.key = inputField.value.substring(0, previousLength);
+//       // clear all previous input on input box
+//       console.log('ori: ' + inputField.value + 'remain: ' + inputField.value.substring(previousLength));
+//       inputField.value = inputField.value.substring(previousLength);
+//       // immediately send data
+//       socket.emit('key', 'keydown', data);
+//       // clear buffer if exist
+//       if (debounceBuffer) {
+//         debounceBuffer.cancel();
+//         debounceBuffer = null;
+//       }
+//     } else if (previousLength < previousLength) {
+//       // ?? Deletion ??
+
+//       // clear buffer if exist      
+//       if (debounceBuffer) {
+//         debounceBuffer.cancel();
+//         debounceBuffer = null;
+//       }
+//       console.log('meow');
+
+//     } else {
+//       // no change in input length, user could be still entering data
+
+//       if (debounceBuffer) {
+//         debounceBuffer();
+//       } else {
+//         debounceBuffer = _.debounce(function() {
+//           console.log('entered');
+//           data.key = inputField.value;
+//           inputField.value = '';    
+//           socket.emit('key', 'keydown', data);
+
+//           debounceBuffer = null;
+//         }, 1500);
+//       }
+//     }
+
+//     previousLength = data.key.length;
+//     if (previousLength < 1) previousLength = 1;
+//   }
+
+//   // keep one character, if character is acsii send immediately
+//   // else, 1. wait 2 seconds and send
+//   //       2. if additional character is inserted send previous immediately
+
+//   if (constants.isIOS) {
+
+//     previousLength = inputField.value.length;
+//   } else {
+
+//     console.log(data);
+//   }
+// }
+
+// function keyup(event) {
+//   // Store current event data
+//   var data = {
+//     key: event.key,
+//     keyCode: event.which || event.keyCode
+//   };
+
+//   if ((data.keyCode === 229)        ||  // [1] Android Chrome text input (229 buffer busy).
+//       (data.key === 'Unidentified') ||  //     This will most likely return 'Unidentified' too
+//       (data.keyCode === 261)        ||  // [2] Windows 10 Chrome chinese character selector character
+//       (data.key.length === 1))          // [3] Match non-displayable character on most device.
+//   {
+//     // We let `input` event handle this.
+//     return;
+//   }
+
+
+//   // This should return non-displayable character only
+//   console.log(data);
+//   socket.emit('key', 'keydown', data);
+// }
 
 (function(){
   var ptStat = {
