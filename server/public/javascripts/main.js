@@ -209,3 +209,10 @@ function keyup(event) {
   scroll.addEventListener('pointerup', pointerup);
 
 }());
+
+
+var dynamicLine = document.getElementById('dynamic-line');
+dynamicLine.style.height = (window.innerHeight - 100) + 'px';
+window.addEventListener('resize', function() {
+  dynamicLine.style.height = (window.innerHeight - 100) + 'px';
+});

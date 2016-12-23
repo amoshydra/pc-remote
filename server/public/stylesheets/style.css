@@ -50,6 +50,7 @@ body {
   width: 1px;
   height: calc(100vh - 50px - 50px);
   border-left: 1px solid white;
+  transition: height 0.4s;
 }
 
 .shape.arrow.down {
@@ -74,6 +75,10 @@ body {
   padding: 0;
   height: 50px;
   position: relative;
+
+  /* fix for iOS vh not excluding native UI */
+  position: fixed;
+  bottom: 0;
 }
 
 .menu.row {
