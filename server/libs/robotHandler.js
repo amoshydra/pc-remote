@@ -78,14 +78,10 @@ var handlerFuncs = {
 };
 
 // Send unicode using copy and paste method
-var stringBuffer = '';
 function sendUnicode(word, isSpecial) {
-  stringBuffer += word;
-
-  _.debounce(function() {
-    let temp = stringBuffer;
-    stringBuffer = '';
-    ncp.copy(temp, function() {
+  if (word) {
+    console.log(word);
+    ncp.copy(word, function() {
       robot.keyTap('v', 'control');
       if (isSpecial) {
         robot.keyTap('left');
@@ -93,7 +89,7 @@ function sendUnicode(word, isSpecial) {
         robot.keyTap('right');
       }
     });
-  }, 800)();
+  }
 }
 
 // Map JavaScript Key event name to robotjs event
