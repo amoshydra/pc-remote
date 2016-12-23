@@ -70,7 +70,7 @@ function keyup(event) {
   // Store current event data
   var data = {
     key: event.key,
-    keyCode: event.keyCode
+    keyCode: event.which || event.keyCode
   };
 
   if ((data.keyCode === 229)        ||  // [1] Android Chrome text input (229 buffer busy).
