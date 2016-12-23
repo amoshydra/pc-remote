@@ -30,9 +30,11 @@
     "socket.io": "^1.7.2"
   },
   "devDependencies": {
-    "7zip-bin-win": "^2.0.2",
     "electron": "1.4.13",
     "electron-builder": "^10.9.2",
     "nodemon": "^1.11.0"
+  },
+  "optionalDependencies": {
+    "7zip-bin-win": "^2.0.2"
   }
 }
