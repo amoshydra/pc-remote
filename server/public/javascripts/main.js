@@ -11,7 +11,8 @@ var constants = {
     mouse: 'mouse',
     navigation: 'navigate'
   },
-  scrollMultInterval: 10
+  scrollMultInterval: 10,
+  isIOS: /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream
 };
 var config = {
   control: {
