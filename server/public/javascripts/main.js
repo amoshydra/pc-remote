@@ -179,19 +179,18 @@ function getKeyFromKeyCode(keyCode) {
   }
 
   var pointerup = function pointerup(event) {
+    var travel = {
+      x: event.pageX - ptStat.init.x,
+      y: event.pageY - ptStat.init.y
+    };
+    var pseudoMagnitude = Math.abs((travel.x + travel.y) / 2);
+
     if (config.control.matches(constants.controlModes.mouse)) {
-      if (!ptStat.bool.isMoving) {
+      if (pseudoMagnitude < 0.1) {
         socket.emit('key', 'mousedown', { x: event.pageX, y: event.pageY });
       }
     } else if (config.control.matches(constants.controlModes.navigation)) {
-
-      var travel = {
-        x: event.pageX - ptStat.init.x,
-        y: event.pageY - ptStat.init.y
-      };
-      var pseudoMagnitude = (travel.x + travel.y) / 2;
-
-      if (Math.abs(pseudoMagnitude) < config.touchThreshold) {
+      if (pseudoMagnitude < config.touchThreshold) {
         socket.emit('key', 'navigateenter', { x: event.pageX, y: event.pageY });
       } else {
         socket.emit('key', 'navigatemove', travel);
@@ -248,9 +247,7 @@ function getKeyFromKeyCode(keyCode) {
   scroll.addEventListener('pointerdown', pointerdown);
   scroll.addEventListener('pointermove', _.throttle(pointermove, scrollSpeed));
   scroll.addEventListener('pointerup', pointerup);
-
 }());
-
 
 var dynamicLine = document.getElementById('dynamic-line');
 dynamicLine.style.height = (window.innerHeight - 100) + 'px';
