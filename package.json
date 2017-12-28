@@ -10,8 +10,8 @@
   "scripts": {
     "start": "electron ./application/main.js",
     "watch": "nodemon --exec electron application/main.js",
-    "setup": "npm install && npm run rebuild",
-    "rebuild": "npm rebuild --runtime=electron --target=1.4.13 --disturl=https://atom.io/download/atom-shell --abi=48",
+    "rebuild": "npm rebuild --runtime=electron --target=1.7.10 --disturl=https://atom.io/download/atom-shell --abi=51",
+    "postinstall": "npm run rebuild",
     "pack": "build --dir",
     "dist": "build"
   },
@@ -20,21 +20,21 @@
   },
   "dependencies": {
     "copy-paste": "^1.3.0",
-    "debug": "~2.2.0",
-    "express": "~4.13.4",
-    "hbs": "~4.0.0",
-    "lodash": "^4.17.2",
-    "morgan": "~1.7.0",
-    "robotjs": "^0.4.5",
-    "serve-favicon": "~2.3.0",
+    "debug": "~3.1.0",
+    "express": "~4.16.2",
+    "hbs": "~4.0.1",
+    "lodash": "^4.17.4",
+    "morgan": "~1.9.0",
+    "robotjs": "^0.4.7",
+    "serve-favicon": "~2.4.5",
     "socket.io": "^1.7.2"
   },
   "devDependencies": {
-    "electron": "1.4.13",
-    "electron-builder": "^10.9.2",
-    "nodemon": "^1.11.0"
+    "electron": "1.7.10",
+    "electron-builder": "^19.49.2",
+    "nodemon": "^1.14.3"
   },
   "optionalDependencies": {
-    "7zip-bin-win": "^2.0.2"
+    "7zip-bin-win": "^2.1.1"
   }
 }

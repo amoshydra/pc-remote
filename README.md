@@ -15,11 +15,13 @@
 
 #### Setting up
 ```
-npm run setup
+npm install
 npm start
 ```
 This project uses robot.js and electron. Additional step is needed to install the dependency.
-`npm run setup` will install all project dependencies via `npm install`, then rebuild the binary of robot.js.
+A postinstall script is provided to automatically rebuild the binary of robot.js after performing `npm install`.
+
+/* yarn is not supported in this repo
 
 #### Developing
 ```
