@@ -30,7 +30,7 @@
     "morgan": "~1.9.0",
     "robotjs": "^0.4.7",
     "serve-favicon": "~2.4.5",
-    "socket.io": "^1.7.2"
+    "socket.io": "^2.0.4"
   },
   "devDependencies": {
     "electron": "1.7.10",
