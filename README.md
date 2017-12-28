@@ -15,17 +15,17 @@
 
 #### Setting up
 ```
-npm install
-npm start
+yarn
+yarn start
 ```
 This project uses robot.js and electron. Additional step is needed to install the dependency.
-A postinstall script is provided to automatically rebuild the binary of robot.js after performing `npm install`.
+A postinstall script is provided to automatically rebuild the binary for robot.js after `yarn`.
 
 /* yarn is not supported in this repo
 
 #### Developing
 ```
-npm run watch
+yarn watch
 ```
 Nodemon is used to monitor file changes and reload application.  
 
