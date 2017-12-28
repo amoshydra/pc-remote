@@ -8,7 +8,7 @@ const { app, BrowserWindow, webContents } = electron;
 
 // Get port from environment and Initialize server
 var network = {
-  port: networksUtil.normalizePort(process.env.PORT || '3000'),
+  port: networksUtil.normalizePort(process.env.PORT || '33000'),
   addresses: networksUtil.getLocalIP()
 };
 
