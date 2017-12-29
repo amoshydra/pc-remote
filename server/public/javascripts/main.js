@@ -11,7 +11,7 @@ var constants = {
     mouse: 'mouse',
     navigation: 'navigate'
   },
-  scrollMultInterval: 10,
+  scrollMultInterval: 25,
   isIOS: /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream
 };
 var config = {
@@ -239,13 +239,16 @@ function getKeyFromKeyCode(keyCode) {
       ptStat.updateDiff(event);
       ptStat.updatePrev(event);
 
+      if (ptStat.diff.y === 0) return false;
       socket.emit('key', 'scroll', ptStat.diff);
     }
   }
 
   var scrollSpeed = config.scrollDelay * constants.scrollMultInterval;
   scroll.addEventListener('pointerdown', pointerdown);
-  scroll.addEventListener('pointermove', _.throttle(pointermove, scrollSpeed));
+  scroll.addEventListener('pointermove', _.throttle(pointermove, scrollSpeed, {
+    leading: true,
+  }));
   scroll.addEventListener('pointerup', pointerup);
 }());
 

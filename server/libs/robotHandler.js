@@ -2,6 +2,10 @@ const robot = require('robotjs');
 const ncp = require('copy-paste');
 const _ = require('lodash');
 
+const config = {
+  scrollSensitivity: 20,
+};
+
 var handlerFuncs = {
   mousemove: function(pos) {
     mouse = robot.getMousePos();
@@ -35,10 +39,8 @@ var handlerFuncs = {
   },
 
   scroll: function(pos) {
-    if (pos.y < 0) direction = 'up';
-    if (pos.y > 0) direction = 'down';
-
-    robot.scrollMouse(1, direction);
+    const scrollDistance = Math.trunc(pos.y / config.scrollSensitivity) || Math.sign(pos.y);
+    robot.scrollMouse(scrollDistance, 'up');
   },
 
   keydown: function(data) {
