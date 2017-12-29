@@ -2457,9 +2457,9 @@ rimraf@2, rimraf@^2.2.8, rimraf@^2.5.1, rimraf@^2.6.1:
   dependencies:
     glob "^7.0.5"
 
-robotjs@^0.4.7:
+"robotjs@git://github.com/octalmage/robotjs#master":
   version "0.4.7"
-  resolved "https://registry.yarnpkg.com/robotjs/-/robotjs-0.4.7.tgz#b2d20311381d7e76665417c0ac66882e69f78132"
+  resolved "git://github.com/octalmage/robotjs#d0217334ddae79ff7d07046b8f65d43597a8044a"
   dependencies:
     nan "^2.2.1"
     prebuild-install "^2.1.1"
