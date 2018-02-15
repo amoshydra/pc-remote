@@ -2,7 +2,7 @@
   "name": "remote-control-server",
   "productName": "PC Remote Server",
   "description": "HTTP remote control server with socket.io",
-  "version": "0.0.3",
+  "version": "0.1.0",
   "author": "amoshydra",
   "private": true,
   "postinstall": "install-app-deps",
