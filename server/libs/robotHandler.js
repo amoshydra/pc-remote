@@ -57,7 +57,7 @@ var handlerFuncs = {
 
   scroll: function(pos) {
     const scrollDistance = Math.trunc(pos.y / config.scrollSensitivity) || Math.sign(pos.y);
-    robot.scrollMouse(scrollDistance, 'up');
+    robot.scrollMouse(-scrollDistance, 'up');
   },
 
   keydown: function(data) {
