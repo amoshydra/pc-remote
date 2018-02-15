@@ -157,7 +157,6 @@ function getKeyFromKeyCode(keyCode) {
     reset: function() {
       this.bool.isActive = false;
       this.bool.isMoving = false;
-      this.bool.isDragging = false;
     }
   };
 
@@ -174,6 +173,10 @@ function getKeyFromKeyCode(keyCode) {
 
   var pointermove = function pointermove(event) {
     ptStat.bool.isMoving = true;
+    if (ptStat.bool.isWaiting) {
+      clearTimeout(ptStat.bool.isWaiting);
+      ptStat.bool.isWaiting = false;
+    }
 
     if (ptStat.bool.isActive && config.control.matches(constants.controlModes.mouse)) {
       event.preventDefault();
@@ -195,7 +198,10 @@ function getKeyFromKeyCode(keyCode) {
 
     if (config.control.matches(constants.controlModes.mouse)) {
       if (pseudoMagnitude < 0.1) {
-        socket.emit('key', 'mousedown', { x: event.pageX, y: event.pageY });
+        ptStat.bool.isWaiting = setTimeout(function() {
+          ptStat.bool.isWaiting = false;
+          socket.emit('key', 'mousedown', { x: event.pageX, y: event.pageY });
+        }, 200);
       }
     } else if (config.control.matches(constants.controlModes.navigation)) {
       if (pseudoMagnitude < config.touchThreshold) {
@@ -205,11 +211,11 @@ function getKeyFromKeyCode(keyCode) {
       }
     }
 
+    if (ptStat.bool.isDragging) {
+      socket.emit('key', 'mouseup', { x: event.pageX, y: event.pageY });
+      ptStat.bool.isDragging = false;
+    }
     ptStat.reset();
-    ptStat.bool.isWaiting = setTimeout(function() {
-      ptStat.bool.isWaiting = false;
-    }, 500);
-    socket.emit('key', 'mouseup', { x: event.pageX, y: event.pageY });
   }
 
   surface.addEventListener('pointerdown', pointerdown);

@@ -25,10 +25,9 @@ var handlerFuncs = {
   },
 
   mouseup: function() {
-    if (state.isMouseDragging) {
-      state.isMouseDragging = false;
-      robot.mouseToggle('up', 'left');
-    }
+    console.log('mouseup')
+    robot.mouseToggle('up', 'left');
+    state.isMouseDragging = false;
   },
   mousedown: function() {
     robot.mouseClick();
