@@ -91,14 +91,14 @@ function keydown(e) {
   :: Allow user to keep typing and use debounce to send the data string
   :: Once the time is up, send data and clear input field
 
-  :: Note: 
+  :: Note:
   ::  - iOS Pin Yin will trigger input event without keydown or keyup
   ::  - clearing input field does not remove iOS keyboard buffer.
 */
 var debounceBuffer = null;
 function input(e) {
 
-  // Previous eventListener requested to stop propagation 
+  // Previous eventListener requested to stop propagation
   if (!shouldPropagate) {
     shouldPropagate = true; // restore the boolean
     return; // stop execution
@@ -111,10 +111,10 @@ function input(e) {
       inputField.value = '';
 
       socket.emit('key', 'keydown', { key: data, type: e.type });
-      debounceBuffer = null;    
+      debounceBuffer = null;
     }, 1500);
   }
-  
+
   // execute debounce
   debounceBuffer();
 }
@@ -136,7 +136,9 @@ function getKeyFromKeyCode(keyCode) {
     diff: { x: 0, y: 0 },
     bool: {
       isActive: false,
-      isMoving: false
+      isMoving: false,
+      isWaiting: false, // is waiting for double click
+      isDragging: false,
     },
     updatePrev: function(event) {
       this.prev.x = event.pageX;
@@ -155,6 +157,7 @@ function getKeyFromKeyCode(keyCode) {
     reset: function() {
       this.bool.isActive = false;
       this.bool.isMoving = false;
+      this.bool.isDragging = false;
     }
   };
 
@@ -163,6 +166,10 @@ function getKeyFromKeyCode(keyCode) {
     ptStat.updateInit(event);
 
     ptStat.bool.isActive = true;
+
+    if (ptStat.bool.isWaiting) {
+      ptStat.bool.isDragging = true;
+    }
   }
 
   var pointermove = function pointermove(event) {
@@ -174,7 +181,8 @@ function getKeyFromKeyCode(keyCode) {
       ptStat.updateDiff(event, config.moveSpeed);
       ptStat.updatePrev(event);
 
-      socket.emit('key', 'mousemove', ptStat.diff);
+      var method = ptStat.bool.isDragging ? 'mousedrag' : 'mousemove';
+      socket.emit('key', method, ptStat.diff);
     }
   }
 
@@ -198,6 +206,10 @@ function getKeyFromKeyCode(keyCode) {
     }
 
     ptStat.reset();
+    ptStat.bool.isWaiting = setTimeout(function() {
+      ptStat.bool.isWaiting = false;
+    }, 500);
+    socket.emit('key', 'mouseup', { x: event.pageX, y: event.pageY });
   }
 
   surface.addEventListener('pointerdown', pointerdown);

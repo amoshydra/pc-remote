@@ -6,12 +6,30 @@ const config = {
   scrollSensitivity: 20,
 };
 
+const state = {
+  isMouseDragging: false,
+};
+
 var handlerFuncs = {
   mousemove: function(pos) {
     mouse = robot.getMousePos();
     robot.moveMouse(mouse.x + pos.x, mouse.y + pos.y);
   },
+  mousedrag: function(pos) {
+    if (!state.isMouseDragging) {
+      robot.mouseToggle('down', 'left');
+      state.isMouseDragging = true;
+    }
+    mouse = robot.getMousePos();
+    robot.moveMouse(mouse.x + pos.x, mouse.y + pos.y);
+  },
 
+  mouseup: function() {
+    if (state.isMouseDragging) {
+      state.isMouseDragging = false;
+      robot.mouseToggle('up', 'left');
+    }
+  },
   mousedown: function() {
     robot.mouseClick();
   },
