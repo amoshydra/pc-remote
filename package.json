@@ -10,7 +10,7 @@
   "scripts": {
     "start": "electron ./application/main.js",
     "watch": "nodemon --exec electron application/main.js",
-    "rebuild": "npm rebuild --runtime=electron --target=1.7.10 --disturl=https://atom.io/download/atom-shell --abi=51",
+    "rebuild": "npm rebuild --runtime=electron --target=1.8.2 --disturl=https://atom.io/download/atom-shell --abi=57",
     "postinstall": "npm run rebuild",
     "pack": "build --dir",
     "dist": "build"
@@ -33,7 +33,7 @@
     "socket.io": "^2.0.4"
   },
   "devDependencies": {
-    "electron": "1.7.10",
+    "electron": "1.8.2",
     "electron-builder": "^19.49.2",
     "nodemon": "^1.14.3"
   },
