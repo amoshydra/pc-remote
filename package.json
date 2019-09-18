@@ -27,7 +27,7 @@
     "express": "~4.16.2",
     "hbs": "~4.0.1",
     "lodash": "^4.17.4",
-    "morgan": "~1.9.0",
+    "morgan": "~1.9.1",
     "robotjs": "git://github.com/octalmage/robotjs#master",
     "serve-favicon": "~2.4.5",
     "socket.io": "^2.0.4"
