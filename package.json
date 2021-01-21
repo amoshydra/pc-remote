@@ -30,7 +30,7 @@
     "morgan": "~1.9.0",
     "robotjs": "git://github.com/octalmage/robotjs#master",
     "serve-favicon": "~2.4.5",
-    "socket.io": "^2.0.4"
+    "socket.io": "^2.4.0"
   },
   "devDependencies": {
     "electron": "1.8.2",
